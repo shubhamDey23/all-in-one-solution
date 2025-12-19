@@ -1,5 +1,3 @@
-'use client';
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider';
 import { useState } from 'react';

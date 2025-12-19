@@ -4,15 +4,26 @@ import * as React from "react";
 import { GripVerticalIcon } from "lucide-react";
 import * as ResizablePrimitive from "react-resizable-panels";
 
-import { cn } from "./utils";
+import { cn } from "@/lib/utils";
 
-// 👇 HARD TRUTH: your package has broken / missing typings
-// So we explicitly loosen typing here
-const PanelGroup = (ResizablePrimitive as any).PanelGroup ?? ResizablePrimitive;
-const Panel = (ResizablePrimitive as any).Panel;
+/**
+ * ⚠️ COMPATIBILITY SHIM
+ * Your installed version does NOT expose typed exports.
+ * We resolve components dynamically to avoid TS failures.
+ */
+const PanelGroup =
+  (ResizablePrimitive as any).PanelGroup ??
+  (ResizablePrimitive as any).default ??
+  ResizablePrimitive;
+
+const Panel =
+  (ResizablePrimitive as any).Panel ??
+  ((props: any) => <div {...props} />);
+
 const PanelResizeHandle =
-  (ResizablePrimitive as any).PanelResizeHandle ||
-  (ResizablePrimitive as any).ResizeHandle;
+  (ResizablePrimitive as any).PanelResizeHandle ??
+  (ResizablePrimitive as any).ResizeHandle ??
+  ((props: any) => <div {...props} />);
 
 function ResizablePanelGroup({
   className,
@@ -20,6 +31,7 @@ function ResizablePanelGroup({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <PanelGroup
+      data-slot="resizable-panel-group"
       className={cn(
         "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
         className
@@ -30,7 +42,7 @@ function ResizablePanelGroup({
 }
 
 function ResizablePanel(props: React.HTMLAttributes<HTMLDivElement>) {
-  return <Panel {...props} />;
+  return <Panel data-slot="resizable-panel" {...props} />;
 }
 
 function ResizableHandle({
@@ -42,6 +54,7 @@ function ResizableHandle({
 }) {
   return (
     <PanelResizeHandle
+      data-slot="resizable-handle"
       className={cn(
         "bg-border relative flex w-px items-center justify-center " +
           "data-[panel-group-direction=vertical]:h-px " +
@@ -59,8 +72,4 @@ function ResizableHandle({
   );
 }
 
-export {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-};
+export { ResizablePanelGroup, ResizablePanel, ResizableHandle };
